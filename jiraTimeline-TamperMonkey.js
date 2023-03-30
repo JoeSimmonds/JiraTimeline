@@ -40,6 +40,9 @@ function addStyles() {
     }
 
     svg#tm_timeline_visualisation .bar {fill:red;}
+    svg#tm_timeline_visualisation .status-bar-inprogress {fill:blue;}
+    svg#tm_timeline_visualisation .status-bar-done {fill:green;}
+    svg#tm_timeline_visualisation .status-bar-todo {fill:gray;}
 
     svg#tm_timeline_visualisation text {fill:#eeeeee; font-size:6px;}
 
@@ -89,7 +92,7 @@ function timeline() {
         }
 
         for (const i of issues) {
-            rsvg.addBar(idx, daysBetween(now, i.startDate), i.elapsedDays(), i.label())
+            rsvg.addBar(idx, daysBetween(now, i.startDate), i.elapsedDays(), i.label(),getStatusStyle(i.status))
             idx++
         }
 
@@ -97,6 +100,20 @@ function timeline() {
 
         forceRedrawOfChildren(rsvg.svg.parentNode)
     })
+}
+
+function getStatusStyle(status)
+{
+    switch(status) {
+        case 'Done':
+            return 'status-bar-done'
+        case 'In Progress':
+            return 'status-bar-inprogress';
+        case 'To Do':
+            return 'status-bar-todo';
+        default:
+            return 'bar'
+    }
 }
 
 function buildSvg() {
@@ -144,7 +161,8 @@ function getIssuesFromApi() {
             return new Issue(i.key,
                       parseDateFromApi(i.fields.customfield_11104, '-'),
                       parseDateFromApi(i.fields.duedate, '-'),
-                      i.fields.summary)})})
+                      i.fields.summary,
+                      i.fields.status.statusCategory.name)})})
 }
 
 function getTextFromColumn(row, fieldName) {
@@ -159,11 +177,12 @@ function parseDateFromApi(str) {
 }
 
 class Issue{
-    constructor(issueKey, startDate, endDate, summary) {
+    constructor(issueKey, startDate, endDate, summary, status) {
         this.issueKey = issueKey
         this.startDate = startDate
         this.endDate = endDate
         this.summary = summary
+        this.status = status
     }
 
     asString() {
@@ -203,11 +222,11 @@ class RichSvg {
         this.svg.setAttribute('viewBox', vbAttr)
     }
 
-    addBar(index, start, length, text) {
+    addBar(index, start, length, text, style='bar') {
         if (length <= 0) {
-            this.addCircle(start, index*15+7, 3).classList.add('bar')
+            this.addCircle(start, index*15+7, 3).classList.add(style)
         } else {
-            this.addRect(start, index*15, length, 14).classList.add('bar')
+            this.addRect(start, index*15, length, 14).classList.add(style)
         }
         this.addText(start+2, index*15 + 9, text)
     }
