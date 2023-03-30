@@ -92,7 +92,7 @@ function timeline() {
         }
 
         for (const i of issues) {
-            rsvg.addBar(idx, daysBetween(now, i.startDate), i.elapsedDays(), i.label(),getStatusStyle(i.status))
+            rsvg.addBar(idx, daysBetween(now, i.startDate), i.elapsedDays(), i.label(),getStatusClass(i.status))
             idx++
         }
 
@@ -102,7 +102,7 @@ function timeline() {
     })
 }
 
-function getStatusStyle(status)
+function getStatusClass(status)
 {
     switch(status) {
         case 'Done':
@@ -222,11 +222,11 @@ class RichSvg {
         this.svg.setAttribute('viewBox', vbAttr)
     }
 
-    addBar(index, start, length, text, style='bar') {
+    addBar(index, start, length, text, clazz='bar') {
         if (length <= 0) {
-            this.addCircle(start, index*15+7, 3).classList.add(style)
+            this.addCircle(start, index*15+7, 3).classList.add(clazz)
         } else {
-            this.addRect(start, index*15, length, 14).classList.add(style)
+            this.addRect(start, index*15, length, 14).classList.add(clazz)
         }
         this.addText(start+2, index*15 + 9, text)
     }
