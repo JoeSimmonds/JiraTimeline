@@ -297,6 +297,7 @@ function upsertElement(id, elementType, ns) {
 
 function addButton(text, f) {
     const btn = document.createElement('button')
+    btn.setAttribute('class', 'aui-button aui-button-primary aui-style')
     btn.innerText = text
     const nav = document.getElementsByClassName('aui-nav')[0]
     const li = document.createElement('li')
